@@ -10,7 +10,11 @@
       "Bash(test:*)",
       "Bash(npm install)",
       "Bash(npm install:*)",
-      "Bash(npm test:*)"
+      "Bash(npm test:*)",
+      "Bash(npx ts-node:*)",
+      "Bash(npm whoami:*)",
+      "Bash(npm pack:*)",
+      "Bash(npm publish:*)"
     ]
   }
 }

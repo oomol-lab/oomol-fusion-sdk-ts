@@ -4,6 +4,8 @@ import {
   TaskResultResponse,
   TaskResult,
   OomolFusionSDKOptions,
+  RunOptions,
+  ProgressCallback,
 } from './types';
 import {
   TaskSubmitError,
@@ -63,6 +65,7 @@ export class OomolFusionSDK {
    *
    * @example
    * ```typescript
+   * // 基础用法
    * const result = await sdk.run({
    *   service: 'fal-nano-banana-pro',
    *   inputs: {
@@ -71,17 +74,33 @@ export class OomolFusionSDK {
    *     resolution: "2K"
    *   }
    * });
-   * console.log(result.data);
+   *
+   * // 带进度回调
+   * const result = await sdk.run(
+   *   {
+   *     service: 'fal-nano-banana-pro',
+   *     inputs: { prompt: "一只小猫" }
+   *   },
+   *   {
+   *     onProgress: (progress) => {
+   *       console.log(`进度: ${progress}%`);
+   *     }
+   *   }
+   * );
    * ```
    */
-  async run<T = any>(request: SubmitTaskRequest): Promise<TaskResult<T>> {
+  async run<T = any>(request: SubmitTaskRequest, options?: RunOptions): Promise<TaskResult<T>> {
     const submitResponse = await this.submitTask(request);
 
     if (!submitResponse.success) {
       throw new TaskSubmitError('任务提交失败');
     }
 
-    const result = await this.waitForResult<T>(submitResponse.sessionID, request.service);
+    const result = await this.waitForResult<T>(
+      submitResponse.sessionID,
+      request.service,
+      options?.onProgress
+    );
     return result;
   }
 
@@ -145,11 +164,13 @@ export class OomolFusionSDK {
    * // 做其他事情...
    *
    * // 稍后等待结果
-   * const result = await sdk.waitFor('fal-nano-banana-pro', sessionID);
+   * const result = await sdk.waitFor('fal-nano-banana-pro', sessionID, {
+   *   onProgress: (progress) => console.log(`进度: ${progress}%`)
+   * });
    * ```
    */
-  async waitFor<T = any>(service: string, sessionID: string): Promise<TaskResult<T>> {
-    return this.waitForResult<T>(sessionID, service);
+  async waitFor<T = any>(service: string, sessionID: string, options?: RunOptions): Promise<TaskResult<T>> {
+    return this.waitForResult<T>(sessionID, service, options?.onProgress);
   }
 
   /**
@@ -206,7 +227,11 @@ export class OomolFusionSDK {
   /**
    * 等待任务完成(内部自动轮询)
    */
-  private async waitForResult<T = any>(sessionID: string, service: string): Promise<TaskResult<T>> {
+  private async waitForResult<T = any>(
+    sessionID: string,
+    service: string,
+    onProgress?: ProgressCallback
+  ): Promise<TaskResult<T>> {
     return new Promise((resolve, reject) => {
       const startTime = Date.now();
       const abortController = new AbortController();
@@ -232,6 +257,11 @@ export class OomolFusionSDK {
         try {
           const result = await this.checkTaskStatus<T>(sessionID, service);
 
+          // 发出进度回调
+          if (onProgress && result.progress !== undefined) {
+            onProgress(result.progress);
+          }
+
           if (result.state === 'completed') {
             this.abortControllers.delete(sessionID);
 
@@ -244,6 +274,11 @@ export class OomolFusionSDK {
               sessionID,
               service,
             };
+
+            // 完成时确保进度为 100%
+            if (onProgress) {
+              onProgress(100);
+            }
 
             resolve(finalResult);
           } else if (result.state === 'failed' || result.state === 'error') {

@@ -1,7 +1,7 @@
 {
   "name": "oomol-fusion-sdk",
   "version": "1.0.0",
-  "description": "一个优雅的 TypeScript/JavaScript SDK，用于与 OOMOL Fusion API 交互，支持调用任意 Fusion 服务，无需手动轮询",
+  "description": "An elegant TypeScript/JavaScript SDK for interacting with OOMOL Fusion API. Universal Fusion service client with automatic polling and progress tracking.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -10,8 +10,7 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "prepublishOnly": "npm run build",
-    "example": "ts-node examples/usage.ts"
+    "prepublishOnly": "npm run build && npm test"
   },
   "keywords": [
     "oomol",
@@ -19,9 +18,13 @@
     "ai",
     "api",
     "sdk",
-    "typescript"
+    "typescript",
+    "async",
+    "promise",
+    "progress",
+    "polling"
   ],
-  "author": "",
+  "author": "OOMOL",
   "license": "MIT",
   "devDependencies": {
     "@types/jest": "^30.0.0",
@@ -34,6 +37,7 @@
   "files": [
     "dist",
     "README.md",
+    "README.zh-CN.md",
     "LICENSE",
     "CHANGELOG.md"
   ],
@@ -41,6 +45,10 @@
     "type": "git",
     "url": "https://github.com/oomol-flows/oomol-fusion-sdk"
   },
+  "bugs": {
+    "url": "https://github.com/oomol-flows/oomol-fusion-sdk/issues"
+  },
+  "homepage": "https://github.com/oomol-flows/oomol-fusion-sdk#readme",
   "engines": {
     "node": ">=16.0.0"
   }

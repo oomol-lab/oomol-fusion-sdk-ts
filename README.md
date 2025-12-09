@@ -1,26 +1,29 @@
 # OOMOL Fusion SDK
 
-一个优雅的 TypeScript/JavaScript SDK,用于与 OOMOL Fusion API 交互。**通用的 Fusion 服务客户端**,支持调用任意 Fusion 服务。**无需手动轮询**,SDK 内部自动处理所有异步操作。
+[中文文档](./README.zh-CN.md)
 
-## ✨ 特性
+An elegant TypeScript/JavaScript SDK for interacting with the OOMOL Fusion API. A **universal Fusion service client** that supports calling any Fusion service. **No manual polling required** - the SDK handles all asynchronous operations internally.
 
-- 🌐 **通用服务支持**:可调用任意 OOMOL Fusion 服务
-- 🚀 **简单易用**:使用 async/await,符合现代 JavaScript 最佳实践
-- 🔄 **自动轮询**:无需手动轮询,SDK 内部自动处理
-- 🎯 **TypeScript 支持**:完整的类型定义
-- 🛡️ **完善错误处理**:包含多种自定义错误类型,精确处理异常
-- ⏱️ **可取消任务**:支持取消正在进行的任务
-- 🔧 **高度可配置**:自定义轮询间隔、超时时间等
-- 🌍 **环境检测**:自动检测运行环境并提供兼容性警告
-- 🧪 **测试覆盖**:包含完整的测试用例
+## ✨ Features
 
-## 📦 安装
+- 🌐 **Universal Service Support**: Call any OOMOL Fusion service
+- 🚀 **Simple & Easy**: Modern async/await API following JavaScript best practices
+- 🔄 **Auto Polling**: No manual polling needed, SDK handles it internally
+- 📊 **Real-time Progress**: Progress callbacks to track task status
+- 🎯 **TypeScript Support**: Full type definitions
+- 🛡️ **Robust Error Handling**: Multiple custom error types for precise error handling
+- ⏱️ **Cancellable Tasks**: Cancel ongoing tasks anytime
+- 🔧 **Highly Configurable**: Customize polling interval, timeout, and more
+- 🌍 **Environment Detection**: Auto-detects runtime environment with compatibility warnings
+- 🧪 **Test Coverage**: Comprehensive test suite
+
+## 📦 Installation
 
 ```bash
 npm install oomol-fusion-sdk
 ```
 
-## 🚀 快速开始
+## 🚀 Quick Start
 
 ```typescript
 import OomolFusionSDK from 'oomol-fusion-sdk';
@@ -29,11 +32,11 @@ const sdk = new OomolFusionSDK({
   token: process.env.OOMOL_TOKEN,
 });
 
-// 执行任务并等待结果
+// Run a task and wait for the result
 const result = await sdk.run({
   service: 'fal-nano-banana-pro',
   inputs: {
-    prompt: '一只可爱的小猫咪',
+    prompt: 'A cute little cat',
     aspect_ratio: '1:1',
     resolution: '2K'
   }
@@ -42,69 +45,86 @@ const result = await sdk.run({
 console.log(result.data);
 ```
 
-## 📖 API 文档
+## 📖 API Reference
 
-### 构造函数
+### Constructor
 
 ```typescript
 const sdk = new OomolFusionSDK(options);
 ```
 
-**选项:**
+**Options:**
 
-| 参数 | 类型 | 必需 | 默认值 | 描述 |
-|------|------|------|--------|------|
-| `token` | `string` | ✅ | - | OOMOL 认证令牌 |
-| `baseUrl` | `string` | ❌ | `https://fusion-api.oomol.com/v1` | API 基础 URL |
-| `pollingInterval` | `number` | ❌ | `2000` | 轮询间隔(毫秒) |
-| `timeout` | `number` | ❌ | `300000` | 超时时间(毫秒,5分钟) |
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `token` | `string` | ✅ | - | OOMOL authentication token |
+| `baseUrl` | `string` | ❌ | `https://fusion-api.oomol.com/v1` | API base URL |
+| `pollingInterval` | `number` | ❌ | `2000` | Polling interval (milliseconds) |
+| `timeout` | `number` | ❌ | `300000` | Timeout (milliseconds, 5 minutes) |
 
-### 核心方法
+### Core Methods
 
-#### `run(request)` - 推荐使用
+#### `run(request, options?)` - Recommended
 
-执行任务并等待结果。这是最常用的方法。
+Execute a task and wait for the result. This is the most commonly used method.
 
 ```typescript
+// Basic usage
 const result = await sdk.run({
   service: 'fal-nano-banana-pro',
   inputs: {
-    prompt: '一只小猫',
+    prompt: 'A cute cat',
     aspect_ratio: '1:1'
   }
 });
+
+// With progress callback
+const result = await sdk.run(
+  {
+    service: 'fal-nano-banana-pro',
+    inputs: { prompt: 'A cute cat' }
+  },
+  {
+    onProgress: (progress) => {
+      console.log(`Progress: ${progress}%`);
+      // Update your progress bar UI
+    }
+  }
+);
 ```
 
-#### `submit(request)` - 高级用法
+#### `submit(request)` - Advanced
 
-仅提交任务,不等待结果。适用于批量提交场景。
+Submit a task without waiting for the result. Useful for batch submissions.
 
 ```typescript
 const { sessionID } = await sdk.submit({
   service: 'fal-nano-banana-pro',
-  inputs: { prompt: '一只小狗' }
+  inputs: { prompt: 'A cute dog' }
 });
 ```
 
-#### `waitFor(service, sessionID)` - 高级用法
+#### `waitFor(service, sessionID, options?)` - Advanced
 
-等待指定任务完成。与 `submit()` 配合使用。
+Wait for a specific task to complete. Use with `submit()`.
 
 ```typescript
-const result = await sdk.waitFor('fal-nano-banana-pro', sessionID);
+const result = await sdk.waitFor('fal-nano-banana-pro', sessionID, {
+  onProgress: (progress) => console.log(`Progress: ${progress}%`)
+});
 ```
 
 #### `cancel(sessionID)`
 
-取消正在进行的任务。
+Cancel an ongoing task.
 
 ```typescript
 sdk.cancel(sessionID);
 ```
 
-## 💡 使用示例
+## 💡 Usage Examples
 
-### 基础用法
+### Basic Usage
 
 ```typescript
 const sdk = new OomolFusionSDK({
@@ -114,7 +134,7 @@ const sdk = new OomolFusionSDK({
 const result = await sdk.run({
   service: 'fal-nano-banana-pro',
   inputs: {
-    prompt: '一只可爱的小猫咪在阳光下打哈欠',
+    prompt: 'A cute little cat yawning in the sunlight',
     aspect_ratio: '1:1',
     resolution: '2K',
   }
@@ -123,12 +143,30 @@ const result = await sdk.run({
 console.log(result.data);
 ```
 
-### 批量生成
+### With Progress Callback
 
 ```typescript
-const prompts = ['一只小猫', '一只小狗', '一只小兔子'];
+const result = await sdk.run(
+  {
+    service: 'fal-nano-banana-pro',
+    inputs: { prompt: 'A cute cat' }
+  },
+  {
+    onProgress: (progress) => {
+      console.log(`Current progress: ${progress}%`);
+      // Update UI, e.g., progress bar
+      updateProgressBar(progress);
+    }
+  }
+);
+```
 
-// 并行提交所有任务
+### Batch Generation
+
+```typescript
+const prompts = ['A cute cat', 'A cute dog', 'A cute rabbit'];
+
+// Submit all tasks in parallel
 const submissions = await Promise.all(
   prompts.map(prompt => sdk.submit({
     service: 'fal-nano-banana-pro',
@@ -136,7 +174,7 @@ const submissions = await Promise.all(
   }))
 );
 
-// 并行等待所有结果
+// Wait for all results in parallel
 const results = await Promise.all(
   submissions.map(({ sessionID }) =>
     sdk.waitFor('fal-nano-banana-pro', sessionID)
@@ -144,7 +182,7 @@ const results = await Promise.all(
 );
 ```
 
-### 错误处理
+### Error Handling
 
 ```typescript
 import { TaskTimeoutError, TaskFailedError } from 'oomol-fusion-sdk';
@@ -152,18 +190,18 @@ import { TaskTimeoutError, TaskFailedError } from 'oomol-fusion-sdk';
 try {
   const result = await sdk.run({
     service: 'fal-nano-banana-pro',
-    inputs: { prompt: '测试' }
+    inputs: { prompt: 'Test' }
   });
 } catch (error) {
   if (error instanceof TaskTimeoutError) {
-    console.error('任务超时');
+    console.error('Task timed out');
   } else if (error instanceof TaskFailedError) {
-    console.error('任务失败:', error.message);
+    console.error('Task failed:', error.message);
   }
 }
 ```
 
-### TypeScript 类型
+### TypeScript Types
 
 ```typescript
 interface MyServiceData {
@@ -172,38 +210,38 @@ interface MyServiceData {
 
 const result = await sdk.run<MyServiceData>({
   service: 'fal-nano-banana-pro',
-  inputs: { prompt: '小猫' }
+  inputs: { prompt: 'A cat' }
 });
 
-// result.data.images 现在有完整类型提示
+// result.data.images now has full type hints
 ```
 
-## 🚨 错误类型
+## 🚨 Error Types
 
-SDK 提供了完整的错误类型系统:
+The SDK provides a complete error type system:
 
-- `TaskSubmitError` - 任务提交失败
-- `TaskTimeoutError` - 任务超时
-- `TaskCancelledError` - 任务被取消
-- `TaskFailedError` - 任务执行失败
-- `NetworkError` - 网络请求失败
+- `TaskSubmitError` - Task submission failed
+- `TaskTimeoutError` - Task timed out
+- `TaskCancelledError` - Task was cancelled
+- `TaskFailedError` - Task execution failed
+- `NetworkError` - Network request failed
 
-## ❓ 常见问题
+## ❓ FAQ
 
-**如何获取 Token?**
-访问 [OOMOL 官网](https://oomol.com) 注册并获取 API Token。
+**How to get a Token?**
+Visit [OOMOL Website](https://oomol.com) to register and obtain an API Token.
 
-**如何处理超时?**
-在构造函数中设置 `timeout` 选项(毫秒)。
+**How to handle timeouts?**
+Set the `timeout` option (in milliseconds) in the constructor.
 
-**可以并行处理多个任务吗?**
-可以,使用 `Promise.all` 配合 `submit()` 和 `waitFor()`。
+**Can I process multiple tasks in parallel?**
+Yes, use `Promise.all` with `submit()` and `waitFor()`.
 
-## 📄 许可证
+## 📄 License
 
 MIT
 
-## 🔗 相关链接
+## 🔗 Links
 
-- [OOMOL 官网](https://oomol.com)
-- [GitHub 仓库](https://github.com/oomol-flows/oomol-fusion-sdk)
+- [OOMOL Website](https://oomol.com)
+- [GitHub Repository](https://github.com/oomol-flows/oomol-fusion-sdk)

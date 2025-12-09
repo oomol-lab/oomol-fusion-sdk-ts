@@ -33,6 +33,8 @@ export interface TaskResultResponse<T = any> {
   data?: T;
   /** 错误信息 */
   error?: string;
+  /** 进度百分比 (0-100) */
+  progress?: number;
 }
 
 /**
@@ -45,6 +47,19 @@ export interface TaskResult<T = any> {
   sessionID: string;
   /** 服务名称 */
   service: string;
+}
+
+/**
+ * 进度回调函数
+ */
+export type ProgressCallback = (progress: number) => void;
+
+/**
+ * 运行选项
+ */
+export interface RunOptions {
+  /** 进度回调函数 */
+  onProgress?: ProgressCallback;
 }
 
 /**
