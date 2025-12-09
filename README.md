@@ -12,7 +12,6 @@ An elegant TypeScript/JavaScript SDK for interacting with the OOMOL Fusion API. 
 - 📊 **Real-time Progress**: Progress callbacks to track task status
 - 🎯 **TypeScript Support**: Full type definitions
 - 🛡️ **Robust Error Handling**: Multiple custom error types for precise error handling
-- ⏱️ **Cancellable Tasks**: Cancel ongoing tasks anytime
 - 🔧 **Highly Configurable**: Customize polling interval, timeout, and more
 - 🌍 **Environment Detection**: Auto-detects runtime environment with compatibility warnings
 - 🧪 **Test Coverage**: Comprehensive test suite
@@ -112,14 +111,6 @@ Wait for a specific task to complete. Use with `submit()`.
 const result = await sdk.waitFor('fal-nano-banana-pro', sessionID, {
   onProgress: (progress) => console.log(`Progress: ${progress}%`)
 });
-```
-
-#### `cancel(sessionID)`
-
-Cancel an ongoing task.
-
-```typescript
-sdk.cancel(sessionID);
 ```
 
 ## 💡 Usage Examples
@@ -222,7 +213,6 @@ The SDK provides a complete error type system:
 
 - `TaskSubmitError` - Task submission failed
 - `TaskTimeoutError` - Task timed out
-- `TaskCancelledError` - Task was cancelled
 - `TaskFailedError` - Task execution failed
 - `NetworkError` - Network request failed
 

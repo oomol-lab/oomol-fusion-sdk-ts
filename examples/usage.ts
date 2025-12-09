@@ -225,43 +225,10 @@ async function example6_checkStatus() {
 }
 
 /**
- * 示例7: 取消任务
+ * 示例7: 批量生成
  */
-async function example7_cancel() {
-  console.log('\n=== 示例7: 取消任务 ===\n');
-
-  const sdk = new OomolFusionSDK({
-    token: 'your-oomol-token-here',
-    timeout: 60000, // 1分钟超时
-  });
-
-  const { sessionID } = await sdk.submit({
-    service: 'fal-nano-banana-pro',
-    inputs: {
-      prompt: '这个任务会被取消',
-    },
-  });
-
-  console.log('任务已提交，Session ID:', sessionID);
-
-  // 2秒后取消任务
-  setTimeout(() => {
-    console.log('取消任务...');
-    sdk.cancel(sessionID);
-  }, 2000);
-
-  try {
-    await sdk.waitFor('fal-nano-banana-pro', sessionID);
-  } catch (error: any) {
-    console.log('预期的错误:', error.message);
-  }
-}
-
-/**
- * 示例8: 批量生成
- */
-async function example8_batch() {
-  console.log('\n=== 示例8: 批量生成 ===\n');
+async function example7_batch() {
+  console.log('\n=== 示例7: 批量生成 ===\n');
 
   const sdk = new OomolFusionSDK({
     token: OOMOL_TOKEN,
@@ -302,10 +269,10 @@ async function example8_batch() {
 }
 
 /**
- * 示例9: 自定义配置
+ * 示例8: 自定义配置
  */
-async function example9_customConfig() {
-  console.log('\n=== 示例9: 自定义配置 ===\n');
+async function example8_customConfig() {
+  console.log('\n=== 示例8: 自定义配置 ===\n');
 
   const sdk = new OomolFusionSDK({
     token: 'your-oomol-token-here',
@@ -327,10 +294,10 @@ async function example9_customConfig() {
 }
 
 /**
- * 示例10: 使用 TypeScript 类型安全
+ * 示例9: 使用 TypeScript 类型安全
  */
-async function example10_typeSafety() {
-  console.log('\n=== 示例10: TypeScript 类型安全 ===\n');
+async function example9_typeSafety() {
+  console.log('\n=== 示例9: TypeScript 类型安全 ===\n');
 
   const sdk = new OomolFusionSDK({
     token: OOMOL_TOKEN,
@@ -378,10 +345,9 @@ async function runExamples() {
   // await example4_events();
   // await example5_submitAndWait();
   // await example6_checkStatus();
-  // await example7_cancel();
-  // await example8_batch();
-  // await example9_customConfig();
-  // await example10_typeSafety();
+  // await example7_batch();
+  // await example8_customConfig();
+  // await example9_typeSafety();
 }
 
 // 如果直接运行此文件

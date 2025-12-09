@@ -10,7 +10,6 @@ import {
 import {
   TaskSubmitError,
   TaskTimeoutError,
-  TaskCancelledError,
   TaskFailedError,
   NetworkError,
 } from './errors';
@@ -45,14 +44,12 @@ export class OomolFusionSDK {
   private baseUrl: string;
   private pollingInterval: number;
   private timeout: number;
-  private abortControllers: Map<string, AbortController>;
 
   constructor(options: OomolFusionSDKOptions) {
     this.token = options.token;
     this.baseUrl = options.baseUrl || 'https://fusion-api.oomol.com/v1';
     this.pollingInterval = options.pollingInterval || 2000;
     this.timeout = options.timeout || 300000;
-    this.abortControllers = new Map();
 
     // 验证运行时环境
     validateEnvironment();
@@ -102,28 +99,6 @@ export class OomolFusionSDK {
       options?.onProgress
     );
     return result;
-  }
-
-  /**
-   * 取消指定的任务
-   *
-   * @example
-   * ```typescript
-   * const { sessionID } = await sdk.submit({
-   *   service: 'fal-nano-banana-pro',
-   *   inputs: { prompt: '...' }
-   * });
-   *
-   * // 2秒后取消任务
-   * setTimeout(() => sdk.cancel(sessionID), 2000);
-   * ```
-   */
-  cancel(sessionID: string): void {
-    const controller = this.abortControllers.get(sessionID);
-    if (controller) {
-      controller.abort();
-      this.abortControllers.delete(sessionID);
-    }
   }
 
   /**
@@ -234,22 +209,11 @@ export class OomolFusionSDK {
   ): Promise<TaskResult<T>> {
     return new Promise((resolve, reject) => {
       const startTime = Date.now();
-      const abortController = new AbortController();
-      this.abortControllers.set(sessionID, abortController);
 
       const poll = async () => {
         // 检查是否超时
         if (Date.now() - startTime > this.timeout) {
-          this.abortControllers.delete(sessionID);
           const error = new TaskTimeoutError(sessionID, service, this.timeout);
-          reject(error);
-          return;
-        }
-
-        // 检查是否被取消
-        if (abortController.signal.aborted) {
-          this.abortControllers.delete(sessionID);
-          const error = new TaskCancelledError(sessionID, service);
           reject(error);
           return;
         }
@@ -263,8 +227,6 @@ export class OomolFusionSDK {
           }
 
           if (result.state === 'completed') {
-            this.abortControllers.delete(sessionID);
-
             if (!result.data) {
               throw new TaskFailedError('任务完成但没有返回数据', sessionID, service, result.state);
             }
@@ -282,7 +244,6 @@ export class OomolFusionSDK {
 
             resolve(finalResult);
           } else if (result.state === 'failed' || result.state === 'error') {
-            this.abortControllers.delete(sessionID);
             const error = new TaskFailedError(
               result.error || `任务失败: ${result.state}`,
               sessionID,
@@ -295,7 +256,6 @@ export class OomolFusionSDK {
             setTimeout(poll, this.pollingInterval);
           }
         } catch (error) {
-          this.abortControllers.delete(sessionID);
           reject(error);
         }
       };

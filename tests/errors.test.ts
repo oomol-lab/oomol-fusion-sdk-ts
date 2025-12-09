@@ -2,7 +2,6 @@ import {
   OomolFusionError,
   TaskSubmitError,
   TaskTimeoutError,
-  TaskCancelledError,
   TaskFailedError,
   NetworkError,
 } from '../src/errors';
@@ -41,18 +40,6 @@ describe('Errors', () => {
       expect(error.name).toBe('TaskTimeoutError');
       expect(error.message).toContain('session123');
       expect(error.message).toContain('5000');
-    });
-  });
-
-  describe('TaskCancelledError', () => {
-    it('应该创建任务取消错误', () => {
-      const error = new TaskCancelledError('session123', 'test-service');
-      expect(error).toBeInstanceOf(OomolFusionError);
-      expect(error).toBeInstanceOf(TaskCancelledError);
-      expect(error.sessionID).toBe('session123');
-      expect(error.service).toBe('test-service');
-      expect(error.name).toBe('TaskCancelledError');
-      expect(error.message).toContain('session123');
     });
   });
 

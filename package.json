@@ -1,6 +1,6 @@
 {
   "name": "oomol-fusion-sdk",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "An elegant TypeScript/JavaScript SDK for interacting with OOMOL Fusion API. Universal Fusion service client with automatic polling and progress tracking.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

@@ -40,20 +40,6 @@ export class TaskTimeoutError extends OomolFusionError {
 }
 
 /**
- * 任务取消错误
- */
-export class TaskCancelledError extends OomolFusionError {
-  constructor(
-    public sessionID: string,
-    public service: string
-  ) {
-    super(`任务已取消: ${sessionID}`);
-    this.name = 'TaskCancelledError';
-    Object.setPrototypeOf(this, TaskCancelledError.prototype);
-  }
-}
-
-/**
  * 任务失败错误
  */
 export class TaskFailedError extends OomolFusionError {
