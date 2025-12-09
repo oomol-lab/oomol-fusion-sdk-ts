@@ -1,0 +1,47 @@
+{
+  "name": "oomol-fusion-sdk",
+  "version": "1.0.0",
+  "description": "一个优雅的 TypeScript/JavaScript SDK，用于与 OOMOL Fusion API 交互，支持调用任意 Fusion 服务，无需手动轮询",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "prepublishOnly": "npm run build",
+    "example": "ts-node examples/usage.ts"
+  },
+  "keywords": [
+    "oomol",
+    "fusion",
+    "ai",
+    "api",
+    "sdk",
+    "typescript"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/node": "^20.0.0",
+    "jest": "^30.2.0",
+    "ts-jest": "^29.4.6",
+    "ts-node": "^10.9.0",
+    "typescript": "^5.0.0"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/oomol-flows/oomol-fusion-sdk"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

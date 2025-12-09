@@ -1,0 +1,11 @@
+src/
+examples/
+tsconfig.json
+*.ts
+!*.d.ts
+*.log
+.DS_Store
+.vscode/
+.idea/
+coverage/
+.nyc_output/
