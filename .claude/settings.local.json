@@ -14,7 +14,10 @@
       "Bash(npx ts-node:*)",
       "Bash(npm whoami:*)",
       "Bash(npm pack:*)",
-      "Bash(npm publish:*)"
+      "Bash(npm publish:*)",
+      "Bash(node:*)",
+      "Bash(OOMOL_TOKEN='api-135ac69576d687cf2880e0915410a5e2ce3feb79a5b127238ce7cc8e750b1486' node:*)",
+      "Bash(npm pkg:*)"
     ]
   }
 }

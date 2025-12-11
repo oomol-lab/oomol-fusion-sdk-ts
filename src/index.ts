@@ -6,6 +6,7 @@ import {
   OomolFusionSDKOptions,
   RunOptions,
   ProgressCallback,
+  UploadOptions,
 } from './types';
 import {
   TaskSubmitError,
@@ -14,28 +15,33 @@ import {
   NetworkError,
 } from './errors';
 import { validateEnvironment } from './utils';
+import {
+  MultipartUploader,
+  SingleFileUploader,
+  shouldUseMultipartUpload,
+} from './uploader';
 
 /**
  * OOMOL Fusion SDK
  *
- * 通用的 OOMOL Fusion API 客户端,支持调用任意 Fusion 服务
+ * A universal OOMOL Fusion API client that supports calling any Fusion service
  *
  * @example
  * ```typescript
  * const sdk = new OomolFusionSDK({ token: 'your-token' });
  *
- * // 执行任务并等待结果(推荐方式)
+ * // Execute task and wait for result (recommended approach)
  * const result = await sdk.run({
  *   service: 'fal-nano-banana-pro',
- *   inputs: { prompt: '一只可爱的小猫' }
+ *   inputs: { prompt: 'a cute kitten' }
  * });
  *
- * // 如需更细粒度的控制:提交任务但不等待
+ * // For more fine-grained control: submit task without waiting
  * const { sessionID } = await sdk.submit({
  *   service: 'fal-nano-banana-pro',
- *   inputs: { prompt: '一只小狗' }
+ *   inputs: { prompt: 'a puppy' }
  * });
- * // 稍后查询结果
+ * // Query result later
  * const result2 = await sdk.waitFor('fal-nano-banana-pro', sessionID);
  * ```
  */
@@ -51,36 +57,36 @@ export class OomolFusionSDK {
     this.pollingInterval = options.pollingInterval || 2000;
     this.timeout = options.timeout || 300000;
 
-    // 验证运行时环境
+    // Validate runtime environment
     validateEnvironment();
   }
 
   /**
-   * 执行任务并等待结果(推荐使用)
+   * Execute task and wait for result (recommended method)
    *
-   * 这是最常用的方法,一次调用即可提交任务并等待完成
+   * This is the most commonly used method, submit task and wait for completion in one call
    *
    * @example
    * ```typescript
-   * // 基础用法
+   * // Basic usage
    * const result = await sdk.run({
    *   service: 'fal-nano-banana-pro',
    *   inputs: {
-   *     prompt: "一只可爱的小猫",
+   *     prompt: "a cute kitten",
    *     aspect_ratio: "1:1",
    *     resolution: "2K"
    *   }
    * });
    *
-   * // 带进度回调
+   * // With progress callback
    * const result = await sdk.run(
    *   {
    *     service: 'fal-nano-banana-pro',
-   *     inputs: { prompt: "一只小猫" }
+   *     inputs: { prompt: "a kitten" }
    *   },
    *   {
    *     onProgress: (progress) => {
-   *       console.log(`进度: ${progress}%`);
+   *       console.log(`Progress: ${progress}%`);
    *     }
    *   }
    * );
@@ -90,7 +96,7 @@ export class OomolFusionSDK {
     const submitResponse = await this.submitTask(request);
 
     if (!submitResponse.success) {
-      throw new TaskSubmitError('任务提交失败');
+      throw new TaskSubmitError('Task submission failed');
     }
 
     const result = await this.waitForResult<T>(
@@ -102,19 +108,19 @@ export class OomolFusionSDK {
   }
 
   /**
-   * 仅提交任务,不等待结果
+   * Submit task only, without waiting for result
    *
-   * 适用于需要批量提交多个任务,或者想要异步处理的场景
+   * Suitable for scenarios where you need to batch submit multiple tasks or want asynchronous processing
    *
    * @example
    * ```typescript
-   * // 批量提交
+   * // Batch submission
    * const tasks = await Promise.all([
-   *   sdk.submit({ service: 'fal-nano-banana-pro', inputs: { prompt: '小猫' } }),
-   *   sdk.submit({ service: 'fal-nano-banana-pro', inputs: { prompt: '小狗' } }),
+   *   sdk.submit({ service: 'fal-nano-banana-pro', inputs: { prompt: 'kitten' } }),
+   *   sdk.submit({ service: 'fal-nano-banana-pro', inputs: { prompt: 'puppy' } }),
    * ]);
    *
-   * // 稍后查询结果
+   * // Query results later
    * const results = await Promise.all(
    *   tasks.map(({ sessionID }) => sdk.waitFor('fal-nano-banana-pro', sessionID))
    * );
@@ -125,9 +131,9 @@ export class OomolFusionSDK {
   }
 
   /**
-   * 等待指定 sessionID 的任务完成
+   * Wait for task with specified sessionID to complete
    *
-   * 与 submit() 配合使用,用于等待之前提交的任务
+   * Used in conjunction with submit() to wait for previously submitted tasks
    *
    * @example
    * ```typescript
@@ -136,11 +142,11 @@ export class OomolFusionSDK {
    *   inputs: { prompt: '...' }
    * });
    *
-   * // 做其他事情...
+   * // Do other things...
    *
-   * // 稍后等待结果
+   * // Wait for result later
    * const result = await sdk.waitFor('fal-nano-banana-pro', sessionID, {
-   *   onProgress: (progress) => console.log(`进度: ${progress}%`)
+   *   onProgress: (progress) => console.log(`Progress: ${progress}%`)
    * });
    * ```
    */
@@ -149,9 +155,9 @@ export class OomolFusionSDK {
   }
 
   /**
-   * 直接获取任务状态(不等待)
+   * Get task status directly (without waiting)
    *
-   * 用于手动轮询任务状态,不推荐使用,建议使用 run() 或 waitFor()
+   * Used for manual task status polling, not recommended, use run() or waitFor() instead
    *
    * @example
    * ```typescript
@@ -159,7 +165,7 @@ export class OomolFusionSDK {
    * if (status.state === 'completed') {
    *   console.log(status.data);
    * } else if (status.state === 'processing') {
-   *   console.log('任务处理中...');
+   *   console.log('Task processing...');
    * }
    * ```
    */
@@ -168,7 +174,89 @@ export class OomolFusionSDK {
   }
 
   /**
-   * 提交任务(内部方法)
+   * Upload file
+   *
+   * Automatically selects single file upload or multipart upload based on file size
+   *
+   * @example
+   * ```typescript
+   * // Browser environment
+   * const file = document.querySelector('input[type="file"]').files[0];
+   * const downloadUrl = await sdk.uploadFile(file, {
+   *   onProgress: (progress) => {
+   *     if (typeof progress === 'number') {
+   *       console.log(`Upload progress: ${progress}%`);
+   *     } else {
+   *       console.log(`Uploaded: ${progress.uploadedChunks}/${progress.totalChunks} chunks`);
+   *     }
+   *   }
+   * });
+   *
+   * // Node.js environment
+   * import fs from 'fs';
+   * const fileBuffer = fs.readFileSync('path/to/file.jpg');
+   * const file = new Blob([fileBuffer], { type: 'image/jpeg' });
+   * const downloadUrl = await sdk.uploadFile(file, 'image.jpg');
+   * ```
+   */
+  async uploadFile(
+    file: Blob | Buffer,
+    fileNameOrOptions?: string | UploadOptions,
+    options?: UploadOptions
+  ): Promise<string> {
+    let fileName: string;
+    let uploadOptions: UploadOptions | undefined;
+
+    // Handle parameter overload
+    if (typeof fileNameOrOptions === 'string') {
+      fileName = fileNameOrOptions;
+      uploadOptions = options;
+    } else {
+      // If no file name provided, try to get from File object
+      if (file instanceof File) {
+        fileName = file.name;
+      } else {
+        fileName = 'file.bin';
+      }
+      uploadOptions = fileNameOrOptions;
+    }
+
+    // If it's a Buffer, convert to Blob
+    let blob: Blob;
+    if (Buffer.isBuffer(file)) {
+      blob = new Blob([new Uint8Array(file)], { type: 'application/octet-stream' });
+    } else {
+      blob = file;
+    }
+
+    const multipartThreshold = uploadOptions?.multipartThreshold || 5 * 1024 * 1024;
+
+    if (shouldUseMultipartUpload(blob.size, multipartThreshold)) {
+      // Use multipart upload for large files
+      const uploader = new MultipartUploader(
+        blob,
+        fileName,
+        this.baseUrl,
+        this.token,
+        uploadOptions
+      );
+      const result = await uploader.upload();
+      return result.downloadURL;
+    } else {
+      // Use single file upload for small files
+      const uploader = new SingleFileUploader(
+        blob,
+        fileName,
+        this.baseUrl,
+        this.token,
+        uploadOptions
+      );
+      return await uploader.upload();
+    }
+  }
+
+  /**
+   * Submit task (internal method)
    */
   private async submitTask(request: SubmitTaskRequest): Promise<SubmitTaskResponse> {
     try {
@@ -184,7 +272,7 @@ export class OomolFusionSDK {
       if (!response.ok) {
         const errorText = await response.text().catch(() => response.statusText);
         throw new TaskSubmitError(
-          `任务提交失败: ${errorText}`,
+          `Task submission failed: ${errorText}`,
           response.status,
           errorText
         );
@@ -195,12 +283,12 @@ export class OomolFusionSDK {
       if (error instanceof TaskSubmitError) {
         throw error;
       }
-      throw new NetworkError('网络请求失败', error as Error);
+      throw new NetworkError('Network request failed', error as Error);
     }
   }
 
   /**
-   * 等待任务完成(内部自动轮询)
+   * Wait for task completion (internal automatic polling)
    */
   private async waitForResult<T = any>(
     sessionID: string,
@@ -211,7 +299,7 @@ export class OomolFusionSDK {
       const startTime = Date.now();
 
       const poll = async () => {
-        // 检查是否超时
+        // Check if timeout
         if (Date.now() - startTime > this.timeout) {
           const error = new TaskTimeoutError(sessionID, service, this.timeout);
           reject(error);
@@ -221,14 +309,14 @@ export class OomolFusionSDK {
         try {
           const result = await this.checkTaskStatus<T>(sessionID, service);
 
-          // 发出进度回调
+          // Emit progress callback
           if (onProgress && result.progress !== undefined) {
             onProgress(result.progress);
           }
 
           if (result.state === 'completed') {
             if (!result.data) {
-              throw new TaskFailedError('任务完成但没有返回数据', sessionID, service, result.state);
+              throw new TaskFailedError('Task completed but no data returned', sessionID, service, result.state);
             }
 
             const finalResult: TaskResult<T> = {
@@ -237,7 +325,7 @@ export class OomolFusionSDK {
               service,
             };
 
-            // 完成时确保进度为 100%
+            // Ensure progress is 100% when completed
             if (onProgress) {
               onProgress(100);
             }
@@ -245,14 +333,14 @@ export class OomolFusionSDK {
             resolve(finalResult);
           } else if (result.state === 'failed' || result.state === 'error') {
             const error = new TaskFailedError(
-              result.error || `任务失败: ${result.state}`,
+              result.error || `Task failed: ${result.state}`,
               sessionID,
               service,
               result.state
             );
             reject(error);
           } else {
-            // 任务仍在处理中,继续轮询
+            // Task still processing, continue polling
             setTimeout(poll, this.pollingInterval);
           }
         } catch (error) {
@@ -260,13 +348,13 @@ export class OomolFusionSDK {
         }
       };
 
-      // 开始轮询
+      // Start polling
       poll();
     });
   }
 
   /**
-   * 检查任务状态(内部方法)
+   * Check task status (internal method)
    */
   private async checkTaskStatus<T = any>(sessionID: string, service: string): Promise<TaskResultResponse<T>> {
     try {
@@ -279,7 +367,7 @@ export class OomolFusionSDK {
 
       if (!response.ok) {
         const errorText = await response.text().catch(() => response.statusText);
-        throw new NetworkError(`获取任务状态失败: ${errorText}`);
+        throw new NetworkError(`Failed to get task status: ${errorText}`);
       }
 
       return await response.json();
@@ -287,14 +375,15 @@ export class OomolFusionSDK {
       if (error instanceof NetworkError) {
         throw error;
       }
-      throw new NetworkError('网络请求失败', error as Error);
+      throw new NetworkError('Network request failed', error as Error);
     }
   }
 }
 
 export default OomolFusionSDK;
 
-// 导出所有类型
+// Export all types
 export * from './types';
 export * from './errors';
 export * from './utils';
+export * from './uploader';

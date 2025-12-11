@@ -16,3 +16,8 @@ coverage/
 .env.*
 .git
 .gitignore
+test-*.js
+debug-*.js
+TEST_REPORT.md
+TEST_RESULTS.md
+UPLOAD_INTEGRATION.md

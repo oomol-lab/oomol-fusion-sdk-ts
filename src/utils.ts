@@ -1,5 +1,5 @@
 /**
- * 检测运行时环境
+ * Detect runtime environment
  */
 export function detectEnvironment(): 'browser' | 'node' | 'unknown' {
   if (typeof window !== 'undefined' && typeof window.document !== 'undefined') {
@@ -12,14 +12,14 @@ export function detectEnvironment(): 'browser' | 'node' | 'unknown' {
 }
 
 /**
- * 检查 fetch API 是否可用
+ * Check if fetch API is available
  */
 export function isFetchAvailable(): boolean {
   return typeof fetch !== 'undefined';
 }
 
 /**
- * 验证运行时环境并给出警告
+ * Validate runtime environment and provide warnings
  */
 export function validateEnvironment(): void {
   const env = detectEnvironment();
@@ -28,11 +28,11 @@ export function validateEnvironment(): void {
     if (env === 'node') {
       const nodeVersion = process.version;
       console.warn(
-        `[OOMOL Fusion SDK] 检测到 Node.js ${nodeVersion}。` +
-        `fetch API 在 Node.js 18+ 中原生支持。如果您使用的是较旧版本,请安装 node-fetch polyfill。`
+        `[OOMOL Fusion SDK] Detected Node.js ${nodeVersion}. ` +
+        `The fetch API is natively supported in Node.js 18+. If you are using an older version, please install the node-fetch polyfill.`
       );
     } else {
-      console.error('[OOMOL Fusion SDK] fetch API 不可用,SDK 将无法正常工作。');
+      console.error('[OOMOL Fusion SDK] fetch API is not available, SDK will not function properly.');
     }
   }
 }

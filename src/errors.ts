@@ -1,5 +1,5 @@
 /**
- * SDK 基础错误类
+ * SDK base error class
  */
 export class OomolFusionError extends Error {
   constructor(message: string) {
@@ -10,7 +10,7 @@ export class OomolFusionError extends Error {
 }
 
 /**
- * 任务提交错误
+ * Task submission error
  */
 export class TaskSubmitError extends OomolFusionError {
   constructor(
@@ -25,7 +25,7 @@ export class TaskSubmitError extends OomolFusionError {
 }
 
 /**
- * 任务超时错误
+ * Task timeout error
  */
 export class TaskTimeoutError extends OomolFusionError {
   constructor(
@@ -33,14 +33,14 @@ export class TaskTimeoutError extends OomolFusionError {
     public service: string,
     public timeout: number
   ) {
-    super(`任务超时: ${sessionID} (超时时间: ${timeout}ms)`);
+    super(`Task timeout: ${sessionID} (timeout: ${timeout}ms)`);
     this.name = 'TaskTimeoutError';
     Object.setPrototypeOf(this, TaskTimeoutError.prototype);
   }
 }
 
 /**
- * 任务失败错误
+ * Task failed error
  */
 export class TaskFailedError extends OomolFusionError {
   constructor(
@@ -56,7 +56,7 @@ export class TaskFailedError extends OomolFusionError {
 }
 
 /**
- * 网络请求错误
+ * Network request error
  */
 export class NetworkError extends OomolFusionError {
   constructor(
@@ -66,5 +66,34 @@ export class NetworkError extends OomolFusionError {
     super(message);
     this.name = 'NetworkError';
     Object.setPrototypeOf(this, NetworkError.prototype);
+  }
+}
+
+/**
+ * File upload error
+ */
+export class FileUploadError extends OomolFusionError {
+  constructor(
+    message: string,
+    public statusCode?: number,
+    public response?: any
+  ) {
+    super(message);
+    this.name = 'FileUploadError';
+    Object.setPrototypeOf(this, FileUploadError.prototype);
+  }
+}
+
+/**
+ * File size exceeds limit error
+ */
+export class FileTooLargeError extends FileUploadError {
+  constructor(
+    public fileSize: number,
+    public maxSize: number
+  ) {
+    super(`File size exceeds limit: ${(fileSize / 1024 / 1024).toFixed(2)}MB (max: ${(maxSize / 1024 / 1024).toFixed(2)}MB)`);
+    this.name = 'FileTooLargeError';
+    Object.setPrototypeOf(this, FileTooLargeError.prototype);
   }
 }

@@ -1,47 +1,117 @@
 # Changelog
 
-所有对此项目的显著更改都将记录在此文件中。
+All notable changes to this project will be documented in this file.
 
-本项目遵循 [Semantic Versioning](https://semver.org/spec/v2.0.0.html) 规范。
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [1.1.0] - 2025-12-11
+
+### Added
+
+#### File Upload API
+
+New `uploadFile()` method for smart file uploads to OOMOL cloud storage:
+
+```typescript
+async uploadFile(
+  file: Blob | Buffer,
+  fileNameOrOptions?: string | UploadOptions,
+  options?: UploadOptions
+): Promise<string>
+```
+
+**Key Features:**
+- 🎯 **Smart Strategy**: Automatically selects single or multipart upload
+  - Files < 5MB: Single file upload
+  - Files ≥ 5MB: Multipart upload (with concurrency)
+- 📊 **Real-time Progress**: Progress callbacks for upload percentage and chunk progress
+- 🚀 **Concurrent Upload**: Multipart uploads support concurrency (default: 3)
+- 🔄 **Auto Retry**: Automatic retries on failure (default: 3)
+- 📦 **File Types**: Supports 17 file types with automatic Content-Type mapping
+- 🛡️ **Error Handling**: Comprehensive error handling
+
+**Supported File Types:**
+- Images: `png`, `jpg`, `jpeg`, `gif`, `webp`
+- Audio/Video: `mp3`, `mp4`
+- Documents: `txt`, `md`, `pdf`, `epub`, `docx`, `xlsx`, `pptx`
+- Data: `csv`, `json`, `zip`
+
+#### New Types
+
+```typescript
+interface UploadOptions {
+  onProgress?: UploadProgressCallback;
+  maxConcurrentUploads?: number;      // Default: 3
+  multipartThreshold?: number;        // Default: 5MB
+  retries?: number;                   // Default: 3
+}
+
+interface UploadProgress {
+  uploadedBytes: number;
+  totalBytes: number;
+  percentage: number;
+  uploadedChunks: number;
+  totalChunks: number;
+}
+
+type UploadProgressCallback = (progress: UploadProgress | number) => void;
+```
+
+#### New Error Classes
+
+- `FileUploadError` - File upload failed
+- `FileTooLargeError` - File size exceeds limit (max 500MB)
+
+### Examples
+
+```typescript
+// Basic usage
+const downloadUrl = await sdk.uploadFile(fileBuffer, 'document.pdf');
+
+// With progress callback
+const downloadUrl = await sdk.uploadFile(fileBuffer, 'video.mp4', {
+  onProgress: (progress) => {
+    if (typeof progress === 'number') {
+      console.log(`Upload progress: ${progress}%`);
+    } else {
+      console.log(`Uploaded ${progress.uploadedChunks}/${progress.totalChunks} chunks`);
+    }
+  }
+});
+
+// Custom configuration
+const downloadUrl = await sdk.uploadFile(fileBuffer, 'large-file.zip', {
+  multipartThreshold: 10 * 1024 * 1024,  // 10MB threshold
+  maxConcurrentUploads: 5,                // 5 concurrent uploads
+  retries: 3                              // Retry 3 times
+});
+```
+
+---
 
 ## [1.0.0] - 2024-12-09
 
-### 新增
-- ✨ 初始版本发布
-- 🌐 支持调用任意 OOMOL Fusion 服务
-- 🚀 简单易用的 async/await API
-- 🔄 自动轮询机制,无需手动轮询
-- 🎯 完整的 TypeScript 类型支持
-- 🛡️ 完善的错误处理机制
-- ⏱️ 任务取消功能
-- 🔧 高度可配置(轮询间隔、超时时间等)
+### Added
 
-### API 设计
-- `run()` - 执行任务并等待结果(推荐使用)
-- `submit()` - 仅提交任务,不等待结果
-- `waitFor()` - 等待指定任务完成
-- `cancel()` - 取消正在进行的任务
-- `getTaskStatus()` - 获取任务状态
+- ✨ Initial release
+- 🌐 Support for calling any OOMOL Fusion service
+- 🚀 Simple async/await API
+- 🔄 Automatic polling mechanism
+- 🎯 Full TypeScript support
+- 🛡️ Comprehensive error handling
+- 🔧 Highly configurable (polling interval, timeout, etc.)
 
-### 改进
-- 🔐 优化 Authorization header 格式(使用 Bearer token)
-- 🌍 添加运行时环境检测和验证
-- 📝 完善的错误处理,添加自定义错误类型:
-  - `TaskSubmitError` - 任务提交错误
-  - `TaskTimeoutError` - 任务超时错误
-  - `TaskCancelledError` - 任务取消错误
-  - `TaskFailedError` - 任务失败错误
-  - `NetworkError` - 网络请求错误
-- 🧪 添加测试框架和基础测试用例(100%通过)
-- 📖 清晰简洁的文档和示例代码
+### API Methods
 
-### 设计理念
-- 专注单一推荐方式,避免用户困惑
-- 符合现代 JavaScript 最佳实践
-- 类型安全,开发体验优先
+- `run()` - Execute task and wait for result (recommended)
+- `submit()` - Submit task without waiting
+- `waitFor()` - Wait for specific task to complete
+- `getTaskStatus()` - Get task status
 
-### 技术细节
-- Node.js >= 16.0.0
-- TypeScript 5.0+
-- 原生 fetch API 支持(Node.js 18+)
-- Jest 测试框架
+### Error Types
+
+- `TaskSubmitError` - Task submission error
+- `TaskTimeoutError` - Task timeout error
+- `TaskFailedError` - Task execution failed
+- `NetworkError` - Network request error

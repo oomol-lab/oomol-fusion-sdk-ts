@@ -10,6 +10,7 @@
 - 🚀 **简单易用**:使用 async/await,符合现代 JavaScript 最佳实践
 - 🔄 **自动轮询**:无需手动轮询,SDK 内部自动处理
 - 📊 **实时进度**:支持进度回调,实时了解任务进度
+- 📤 **文件上传**:智能文件上传,大文件自动使用分段上传
 - 🎯 **TypeScript 支持**:完整的类型定义
 - 🛡️ **完善错误处理**:包含多种自定义错误类型,精确处理异常
 - 🔧 **高度可配置**:自定义轮询间隔、超时时间等
@@ -113,6 +114,29 @@ const result = await sdk.waitFor('fal-nano-banana-pro', sessionID, {
 });
 ```
 
+#### `uploadFile(file, fileName?, options?)` - 文件上传
+
+上传文件,大文件(>5MB)自动使用分段上传。
+
+```typescript
+// 浏览器环境
+const file = document.querySelector('input[type="file"]').files[0];
+const downloadUrl = await sdk.uploadFile(file, {
+  onProgress: (progress) => {
+    if (typeof progress === 'number') {
+      console.log(`上传进度: ${progress}%`);
+    } else {
+      console.log(`已上传: ${progress.uploadedChunks}/${progress.totalChunks} 分片`);
+    }
+  }
+});
+
+// Node.js 环境
+import fs from 'fs';
+const fileBuffer = fs.readFileSync('image.jpg');
+const downloadUrl = await sdk.uploadFile(fileBuffer, 'image.jpg');
+```
+
 ## 💡 使用示例
 
 ### 基础用法
@@ -173,10 +197,57 @@ const results = await Promise.all(
 );
 ```
 
+### 文件上传
+
+```typescript
+// 浏览器环境 - 从文件输入上传
+const fileInput = document.querySelector('input[type="file"]');
+const file = fileInput.files[0];
+
+const downloadUrl = await sdk.uploadFile(file, {
+  onProgress: (progress) => {
+    if (typeof progress === 'number') {
+      console.log(`上传进度: ${progress}%`);
+      // 更新进度条
+      progressBar.value = progress;
+    } else {
+      console.log(`已上传 ${progress.uploadedChunks}/${progress.totalChunks} 分片`);
+      console.log(`${(progress.uploadedBytes / 1024 / 1024).toFixed(2)}MB / ${(progress.totalBytes / 1024 / 1024).toFixed(2)}MB`);
+    }
+  }
+});
+
+console.log('文件已上传:', downloadUrl);
+
+// Node.js 环境 - 从文件系统上传
+import fs from 'fs';
+
+const fileBuffer = fs.readFileSync('./documents/report.pdf');
+const downloadUrl = await sdk.uploadFile(fileBuffer, 'report.pdf', {
+  onProgress: (progress) => {
+    if (typeof progress === 'number') {
+      console.log(`上传进度: ${progress}%`);
+    } else {
+      console.log(`已上传 ${progress.uploadedChunks}/${progress.totalChunks} 分片`);
+    }
+  },
+  multipartThreshold: 10 * 1024 * 1024, // 文件大于 10MB 时使用分段上传
+  maxConcurrentUploads: 5, // 并发上传 5 个分片
+  retries: 3 // 失败时重试 3 次
+});
+
+console.log('文件已上传:', downloadUrl);
+```
+
 ### 错误处理
 
 ```typescript
-import { TaskTimeoutError, TaskFailedError } from 'oomol-fusion-sdk';
+import {
+  TaskTimeoutError,
+  TaskFailedError,
+  FileUploadError,
+  FileTooLargeError
+} from 'oomol-fusion-sdk';
 
 try {
   const result = await sdk.run({
@@ -188,6 +259,18 @@ try {
     console.error('任务超时');
   } else if (error instanceof TaskFailedError) {
     console.error('任务失败:', error.message);
+  }
+}
+
+// 文件上传错误处理
+try {
+  const downloadUrl = await sdk.uploadFile(largeFile, 'large-file.zip');
+} catch (error) {
+  if (error instanceof FileTooLargeError) {
+    console.error('文件太大:', error.message);
+    console.error(`文件大小: ${error.fileSize}, 最大: ${error.maxSize}`);
+  } else if (error instanceof FileUploadError) {
+    console.error('上传失败:', error.message);
   }
 }
 ```
@@ -215,6 +298,8 @@ SDK 提供了完整的错误类型系统:
 - `TaskTimeoutError` - 任务超时
 - `TaskFailedError` - 任务执行失败
 - `NetworkError` - 网络请求失败
+- `FileUploadError` - 文件上传失败
+- `FileTooLargeError` - 文件大小超出限制(最大 500MB)
 
 ## ❓ 常见问题
 
