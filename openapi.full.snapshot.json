@@ -1,0 +1,1806 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Fusion API",
+    "version": "1.0.0"
+  },
+  "components": {
+    "schemas": {
+      "SubmitResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "sessionID": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "success",
+          "sessionID"
+        ]
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "error"
+        ]
+      },
+      "ActionResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "required": [
+          "success",
+          "data"
+        ]
+      },
+      "ResultCompletedResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "completed"
+            ]
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "required": [
+          "success",
+          "state",
+          "data"
+        ]
+      },
+      "StateProcessingResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "processing"
+            ]
+          },
+          "progress": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "success",
+          "state",
+          "progress"
+        ]
+      },
+      "NotFoundResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "not_found"
+            ]
+          },
+          "error": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "success",
+          "state",
+          "error"
+        ]
+      },
+      "StateCompletedResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "completed"
+            ]
+          }
+        },
+        "required": [
+          "success",
+          "state"
+        ]
+      },
+      "DoubaoTTSSubmit": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string"
+          },
+          "voice": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "text",
+          "voice"
+        ]
+      },
+      "DoubaoSTTSubmit": {
+        "type": "object",
+        "properties": {
+          "audioURL": {
+            "type": "string"
+          },
+          "format": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "audioURL",
+          "format"
+        ]
+      },
+      "TextToAudioSubmit": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string"
+          },
+          "voice": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "text",
+          "voice"
+        ]
+      },
+      "FalRemoveBackgroundSubmit": {
+        "type": "object",
+        "properties": {
+          "imageURL": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "imageURL"
+        ]
+      },
+      "FalRemoveBackgroundResult": {
+        "type": "object",
+        "properties": {
+          "image": {
+            "type": "object",
+            "properties": {
+              "url": {
+                "type": "string"
+              },
+              "content_type": {
+                "type": "string"
+              },
+              "file_name": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "file_size": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "width": {
+                "type": "number"
+              },
+              "height": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "url",
+              "content_type",
+              "file_name",
+              "file_size",
+              "width",
+              "height"
+            ]
+          }
+        },
+        "required": [
+          "image"
+        ]
+      },
+      "FalFluxProKontextSubmit": {
+        "type": "object",
+        "properties": {
+          "prompt": {
+            "type": "string"
+          },
+          "imageURL": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "prompt",
+          "imageURL"
+        ]
+      },
+      "FalAuraSrSubmit": {
+        "type": "object",
+        "properties": {
+          "imageURL": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "imageURL"
+        ]
+      },
+      "FalSora2ImageToVideoSubmit": {
+        "type": "object",
+        "properties": {
+          "prompt": {
+            "type": "string"
+          },
+          "imageURL": {
+            "type": "string"
+          },
+          "resolution": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "720p",
+              "1080p"
+            ]
+          },
+          "aspectRatio": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "9:16",
+              "16:9"
+            ]
+          },
+          "duration": {
+            "type": "number",
+            "enum": [
+              4,
+              8,
+              12
+            ]
+          },
+          "deleteVideo": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "prompt",
+          "imageURL"
+        ]
+      },
+      "FalSora2TextToVideoSubmit": {
+        "type": "object",
+        "properties": {
+          "prompt": {
+            "type": "string"
+          },
+          "resolution": {
+            "type": "string",
+            "enum": [
+              "720p",
+              "1080p"
+            ]
+          },
+          "aspectRatio": {
+            "type": "string",
+            "enum": [
+              "9:16",
+              "16:9"
+            ]
+          },
+          "duration": {
+            "type": "number",
+            "enum": [
+              4,
+              8,
+              12
+            ]
+          },
+          "deleteVideo": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "prompt"
+        ]
+      },
+      "FalNanoBanana2Submit": {
+        "type": "object",
+        "properties": {
+          "prompt": {
+            "type": "string"
+          },
+          "imageURLs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "numImages": {
+            "type": "integer"
+          },
+          "aspectRatio": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "21:9",
+              "16:9",
+              "3:2",
+              "4:3",
+              "5:4",
+              "1:1",
+              "4:5",
+              "3:4",
+              "2:3",
+              "9:16"
+            ]
+          },
+          "outputFormat": {
+            "type": "string",
+            "enum": [
+              "jpeg",
+              "png",
+              "webp"
+            ]
+          },
+          "safetyTolerance": {
+            "type": "string",
+            "enum": [
+              "1",
+              "2",
+              "3",
+              "4",
+              "5",
+              "6"
+            ]
+          },
+          "seed": {
+            "type": "integer"
+          },
+          "resolution": {
+            "type": "string",
+            "enum": [
+              "0.5K",
+              "1K",
+              "2K",
+              "4K"
+            ]
+          },
+          "limitGenerations": {
+            "type": "boolean"
+          },
+          "enableWebSearch": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "prompt"
+        ]
+      },
+      "FalNanoBananaSubmit": {
+        "type": "object",
+        "properties": {
+          "prompt": {
+            "type": "string"
+          },
+          "imageURLs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "numImages": {
+            "type": "integer"
+          },
+          "outputFormat": {
+            "type": "string",
+            "enum": [
+              "jpeg",
+              "png",
+              "webp"
+            ]
+          },
+          "aspectRatio": {
+            "type": "string",
+            "enum": [
+              "21:9",
+              "1:1",
+              "4:3",
+              "3:2",
+              "2:3",
+              "5:4",
+              "4:5",
+              "3:4",
+              "16:9",
+              "9:16"
+            ]
+          }
+        },
+        "required": [
+          "prompt"
+        ]
+      },
+      "ImageTranslateSubmit": {
+        "type": "object",
+        "properties": {
+          "image": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                }
+              }
+            ]
+          },
+          "config": {
+            "type": "object",
+            "properties": {
+              "translator": {
+                "type": "object",
+                "properties": {
+                  "target_lang": {
+                    "type": "string",
+                    "enum": [
+                      "CHS",
+                      "CHT",
+                      "CSY",
+                      "NLD",
+                      "ENG",
+                      "FRA",
+                      "DEU",
+                      "HUN",
+                      "ITA",
+                      "JPN",
+                      "KOR",
+                      "POL",
+                      "PTB",
+                      "ROM",
+                      "RUS",
+                      "ESP",
+                      "TRK",
+                      "UKR",
+                      "VIN",
+                      "ARA",
+                      "CNR",
+                      "SRP",
+                      "HRV",
+                      "THA",
+                      "IND",
+                      "FIL"
+                    ]
+                  },
+                  "oomol_token": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "target_lang",
+                  "oomol_token"
+                ],
+                "additionalProperties": true
+              }
+            },
+            "required": [
+              "translator"
+            ],
+            "additionalProperties": true
+          }
+        },
+        "required": [
+          "image",
+          "config"
+        ]
+      },
+      "MangaZipTranslateSubmit": {
+        "type": "object",
+        "properties": {
+          "zip_url": {
+            "type": "string"
+          },
+          "config": {
+            "type": "object",
+            "properties": {
+              "translator": {
+                "type": "object",
+                "properties": {
+                  "target_lang": {
+                    "type": "string",
+                    "enum": [
+                      "CHS",
+                      "CHT",
+                      "CSY",
+                      "NLD",
+                      "ENG",
+                      "FRA",
+                      "DEU",
+                      "HUN",
+                      "ITA",
+                      "JPN",
+                      "KOR",
+                      "POL",
+                      "PTB",
+                      "ROM",
+                      "RUS",
+                      "ESP",
+                      "TRK",
+                      "UKR",
+                      "VIN",
+                      "ARA",
+                      "CNR",
+                      "SRP",
+                      "HRV",
+                      "THA",
+                      "IND",
+                      "FIL"
+                    ]
+                  },
+                  "oomol_token": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "target_lang",
+                  "oomol_token"
+                ],
+                "additionalProperties": true
+              }
+            },
+            "required": [
+              "translator"
+            ],
+            "additionalProperties": true
+          },
+          "colorize": {
+            "type": "boolean"
+          },
+          "colorization_size": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "task_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "file": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "directory": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "zip_url",
+          "config"
+        ]
+      },
+      "JinaReaderReadURLRequest": {
+        "type": "object",
+        "properties": {
+          "URL": {
+            "type": "string"
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "markdown",
+              "html",
+              "text",
+              "screenshot",
+              "pageshot"
+            ]
+          },
+          "engine": {
+            "type": "string",
+            "enum": [
+              "direct",
+              "browser",
+              "cf-browser-rendering"
+            ]
+          },
+          "jsonResponse": {
+            "type": "boolean"
+          },
+          "timeout": {
+            "type": "number"
+          },
+          "tokenLimit": {
+            "type": "number"
+          },
+          "useReaderLMV2": {
+            "type": "boolean"
+          },
+          "selectorOnly": {
+            "type": "string"
+          },
+          "selectorWait": {
+            "type": "string"
+          },
+          "selectorNone": {
+            "type": "string"
+          },
+          "removeAllImages": {
+            "type": "boolean"
+          },
+          "withLinkSummary": {
+            "type": "string",
+            "enum": [
+              "true",
+              "all"
+            ]
+          },
+          "withImageSummary": {
+            "type": "string",
+            "enum": [
+              "true",
+              "all"
+            ]
+          }
+        },
+        "required": [
+          "URL"
+        ]
+      },
+      "JinaReaderSearchContentRequest": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string"
+          },
+          "engine": {
+            "type": "string",
+            "enum": [
+              "direct"
+            ]
+          },
+          "jsonResponse": {
+            "type": "boolean"
+          },
+          "withFavicons": {
+            "type": "boolean"
+          },
+          "googleLocal": {
+            "type": "string",
+            "enum": [
+              "US",
+              "CA",
+              "MX",
+              "GB",
+              "DE",
+              "FR",
+              "GP",
+              "CN",
+              "IN",
+              "BR",
+              "AU",
+              "RU",
+              "IT",
+              "ES",
+              "KR",
+              "NL",
+              "CH",
+              "SE",
+              "IE",
+              "SG",
+              "IL",
+              "SA",
+              "AE",
+              "ZA"
+            ]
+          },
+          "hostLanguage": {
+            "type": "string",
+            "enum": [
+              "en",
+              "es",
+              "fr",
+              "de",
+              "ja",
+              "zh-cn",
+              "hi",
+              "pt",
+              "it",
+              "ko",
+              "nl",
+              "ar",
+              "sv",
+              "iw",
+              "af",
+              "ru"
+            ]
+          },
+          "pageIndex": {
+            "type": "number"
+          },
+          "noCache": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "content"
+        ]
+      },
+      "TinifyPNGShrinkRequest": {
+        "type": "object",
+        "properties": {
+          "imageURL": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "imageURL"
+        ]
+      },
+      "QwenMtImageSubmit": {
+        "type": "object",
+        "properties": {
+          "imageURL": {
+            "type": "string"
+          },
+          "sourceLang": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "zh",
+              "en",
+              "ko",
+              "ja",
+              "ru",
+              "es",
+              "fr",
+              "pt",
+              "it",
+              "de",
+              "vi"
+            ]
+          },
+          "targetLang": {
+            "type": "string",
+            "enum": [
+              "zh",
+              "en",
+              "ko",
+              "ja",
+              "ru",
+              "es",
+              "fr",
+              "pt",
+              "it",
+              "vi",
+              "ms",
+              "th",
+              "id",
+              "ar"
+            ]
+          },
+          "domainHint": {
+            "type": "string"
+          },
+          "sensitivities": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "terminologies": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "src": {
+                  "type": "string"
+                },
+                "tgt": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "src",
+                "tgt"
+              ]
+            }
+          },
+          "skipImgSegment": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "imageURL",
+          "targetLang"
+        ]
+      },
+      "FileUploadBaseRequest": {
+        "type": "object",
+        "properties": {
+          "fileSuffix": {
+            "type": "string"
+          },
+          "filename": {
+            "type": "string"
+          }
+        }
+      },
+      "FileUploadCreateMultipartRequest": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/FileUploadBaseRequest"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "fileSize": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "fileSize"
+            ]
+          }
+        ]
+      },
+      "FileUploadPresignedUrlsRequest": {
+        "type": "object",
+        "properties": {
+          "uploadID": {
+            "type": "string"
+          },
+          "key": {
+            "type": "string"
+          },
+          "partNumbers": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
+        },
+        "required": [
+          "uploadID",
+          "key",
+          "partNumbers"
+        ]
+      },
+      "FileUploadCompleteMultipartRequest": {
+        "type": "object",
+        "properties": {
+          "uploadID": {
+            "type": "string"
+          },
+          "key": {
+            "type": "string"
+          },
+          "parts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "partNumber": {
+                  "type": "number"
+                },
+                "etag": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "partNumber",
+                "etag"
+              ]
+            }
+          }
+        },
+        "required": [
+          "uploadID",
+          "key",
+          "parts"
+        ]
+      },
+      "FileUploadAbortMultipartRequest": {
+        "type": "object",
+        "properties": {
+          "uploadID": {
+            "type": "string"
+          },
+          "key": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "uploadID",
+          "key"
+        ]
+      },
+      "PDFTransformEpubSubmit": {
+        "type": "object",
+        "properties": {
+          "pdfURL": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string",
+            "enum": [
+              "gundam"
+            ]
+          },
+          "includesFootnotes": {
+            "type": "boolean"
+          },
+          "ignorePdfErrors": {
+            "type": "boolean"
+          },
+          "ignoreOcrErrors": {
+            "type": "boolean"
+          },
+          "ocrWorkers": {
+            "type": "integer"
+          },
+          "inlineLatex": {
+            "type": "boolean"
+          },
+          "oomolApiKey": {
+            "type": "string"
+          },
+          "filename": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "pdfURL"
+        ]
+      },
+      "PDFTransformMarkdownSubmit": {
+        "type": "object",
+        "properties": {
+          "pdfURL": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string",
+            "enum": [
+              "gundam"
+            ]
+          },
+          "includesFootnotes": {
+            "type": "boolean"
+          },
+          "ignorePdfErrors": {
+            "type": "boolean"
+          },
+          "ignoreOcrErrors": {
+            "type": "boolean"
+          },
+          "ocrWorkers": {
+            "type": "integer"
+          },
+          "oomolApiKey": {
+            "type": "string"
+          },
+          "inlineLatex": {
+            "type": "boolean"
+          },
+          "filename": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "pdfURL"
+        ]
+      },
+      "FalNanoBananaProSubmit": {
+        "type": "object",
+        "properties": {
+          "prompt": {
+            "type": "string"
+          },
+          "imageUrls": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "aspectRatio": {
+            "type": "string",
+            "enum": [
+              "21:9",
+              "16:9",
+              "3:2",
+              "4:3",
+              "5:4",
+              "1:1",
+              "4:5",
+              "3:4",
+              "2:3",
+              "9:16"
+            ]
+          },
+          "outputFormat": {
+            "type": "string",
+            "enum": [
+              "png",
+              "jpeg",
+              "webp",
+              "jpg"
+            ]
+          },
+          "resolution": {
+            "type": "string",
+            "enum": [
+              "1K",
+              "2K",
+              "4K"
+            ]
+          },
+          "numImages": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "prompt"
+        ]
+      },
+      "QwenImageEditPlusRequest": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "type": "string",
+            "enum": [
+              "qwen-image-edit-max",
+              "qwen-image-edit-plus",
+              "qwen-image-edit"
+            ]
+          },
+          "imageURLs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "prompt": {
+            "type": "string"
+          },
+          "generateImageCount": {
+            "type": "integer"
+          },
+          "negativePrompt": {
+            "type": "string"
+          },
+          "size": {
+            "type": "string"
+          },
+          "promptExtend": {
+            "type": "boolean"
+          },
+          "watermark": {
+            "type": "boolean"
+          },
+          "seed": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "imageURLs",
+          "prompt"
+        ]
+      },
+      "QwenDocTurboRequest": {
+        "type": "object",
+        "properties": {
+          "docURLs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "instruction": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "systemPrompt": {
+            "type": "string"
+          },
+          "fileParsingStrategy": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "fast",
+              "quality"
+            ]
+          }
+        }
+      },
+      "WanxKf2vVideoSubmit": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "type": "string",
+            "enum": [
+              "wan2.2-kf2v-flash",
+              "wanx2.1-kf2v-plus"
+            ]
+          },
+          "prompt": {
+            "type": "string"
+          },
+          "firstFrameURL": {
+            "type": "string"
+          },
+          "lastFrameURL": {
+            "type": "string"
+          },
+          "negativePrompt": {
+            "type": "string"
+          },
+          "template": {
+            "type": "string"
+          },
+          "resolution": {
+            "type": "string",
+            "enum": [
+              "480P",
+              "720P",
+              "1080P"
+            ]
+          },
+          "promptExtend": {
+            "type": "boolean"
+          },
+          "watermark": {
+            "type": "boolean"
+          },
+          "seed": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "firstFrameURL"
+        ]
+      },
+      "CphoneNanoBananaSubmit": {
+        "type": "object",
+        "properties": {
+          "prompt": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string",
+            "enum": [
+              "nano-banana-2",
+              "nano-banana-2-2k",
+              "nano-banana-2-4k",
+              "gemini-3-pro-image-preview",
+              "gemini-2.5-flash-image",
+              "nano-banana-hd",
+              "nano-banana",
+              "gemini-2.5-flash-image-preview",
+              "nano-banana-pro",
+              "nano-banana-pro-4k"
+            ]
+          },
+          "aspectRatio": {
+            "type": "string",
+            "enum": [
+              "21:9",
+              "1:1",
+              "4:3",
+              "3:2",
+              "2:3",
+              "5:4",
+              "4:5",
+              "3:4",
+              "16:9",
+              "9:16"
+            ]
+          },
+          "imageURLs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "imageSize": {
+            "type": "string",
+            "enum": [
+              "1K",
+              "2K",
+              "4K"
+            ]
+          }
+        },
+        "required": [
+          "prompt"
+        ]
+      }
+    }
+  },
+  "paths": {
+    "/v1/doubao-tts/submit": {
+      "post": {
+        "tags": [
+          "doubao-tts"
+        ]
+      }
+    },
+    "/v1/doubao-stt/submit": {
+      "post": {
+        "tags": [
+          "doubao-stt"
+        ]
+      }
+    },
+    "/v1/oomol-tts/submit": {
+      "post": {
+        "tags": [
+          "oomol-tts"
+        ]
+      }
+    },
+    "/v1/fal-remove-background/submit": {
+      "post": {
+        "tags": [
+          "fal-remove-background"
+        ]
+      }
+    },
+    "/v1/fal-flux-pro-kontext/submit": {
+      "post": {
+        "tags": [
+          "fal-flux-pro-kontext"
+        ]
+      }
+    },
+    "/v1/fal-aura-sr/submit": {
+      "post": {
+        "tags": [
+          "fal-aura-sr"
+        ]
+      }
+    },
+    "/v1/fal-sora2-image-to-video/submit": {
+      "post": {
+        "tags": [
+          "fal-sora2-image-to-video"
+        ]
+      }
+    },
+    "/v1/fal-sora2-text-to-video/submit": {
+      "post": {
+        "tags": [
+          "fal-sora2-text-to-video"
+        ]
+      }
+    },
+    "/v1/fal-nano-banana-2/submit": {
+      "post": {
+        "tags": [
+          "fal-nano-banana-2"
+        ]
+      }
+    },
+    "/v1/fal-nano-banana/submit": {
+      "post": {
+        "tags": [
+          "fal-nano-banana"
+        ]
+      }
+    },
+    "/v1/image-translate/submit": {
+      "post": {
+        "tags": [
+          "image-translate"
+        ]
+      }
+    },
+    "/v1/manga-zip-translate/submit": {
+      "post": {
+        "tags": [
+          "manga-zip-translate"
+        ]
+      }
+    },
+    "/v1/qwen-mt-image/submit": {
+      "post": {
+        "tags": [
+          "qwen-mt-image"
+        ]
+      }
+    },
+    "/v1/wanx-image/submit": {
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "model": {
+                    "type": "string",
+                    "enum": [
+                      "wan2.6-image"
+                    ]
+                  },
+                  "mode": {
+                    "type": "string",
+                    "enum": [
+                      "image-edit",
+                      "interleave"
+                    ]
+                  },
+                  "prompt": {
+                    "type": "string"
+                  },
+                  "imageURLs": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "negativePrompt": {
+                    "type": "string"
+                  },
+                  "size": {
+                    "type": "string"
+                  },
+                  "n": {
+                    "type": "integer"
+                  },
+                  "maxImages": {
+                    "type": "integer"
+                  },
+                  "promptExtend": {
+                    "type": "boolean"
+                  },
+                  "watermark": {
+                    "type": "boolean"
+                  },
+                  "seed": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "prompt"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubmitResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/pdf-transform-epub/submit": {
+      "post": {
+        "tags": [
+          "pdf-transform-epub"
+        ]
+      }
+    },
+    "/v1/pdf-transform-markdown/submit": {
+      "post": {
+        "tags": [
+          "pdf-transform-markdown"
+        ]
+      }
+    },
+    "/v1/fal-nano-banana-pro/submit": {
+      "post": {
+        "tags": [
+          "fal-nano-banana-pro"
+        ]
+      }
+    },
+    "/v1/wanx-kf2v-video/submit": {
+      "post": {
+        "tags": [
+          "wanx-kf2v-video"
+        ]
+      }
+    },
+    "/v1/cphone-nano-banana/submit": {
+      "post": {
+        "tags": [
+          "cphone-nano-banana"
+        ]
+      }
+    },
+    "/v1/custom-financial-fundamental-report/action/report-list": {
+      "get": {
+        "tags": [
+          "custom-financial-fundamental-report"
+        ]
+      }
+    },
+    "/v1/custom-financial-fundamental-report/action/report": {
+      "get": {
+        "tags": [
+          "custom-financial-fundamental-report"
+        ]
+      }
+    },
+    "/v1/custom-financial-fundamental-report/action/predefined-questions": {
+      "get": {
+        "tags": [
+          "custom-financial-fundamental-report"
+        ]
+      }
+    },
+    "/v1/doubao-text-to-image-seedream/action/generate": {
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "prompt": {
+                    "type": "string"
+                  },
+                  "image": {
+                    "type": "string"
+                  },
+                  "size": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "1K",
+                          "2K",
+                          "4K",
+                          "1k",
+                          "2k",
+                          "4k"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "width": {
+                            "type": "integer"
+                          },
+                          "height": {
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "width",
+                          "height"
+                        ]
+                      }
+                    ]
+                  },
+                  "multiple": {
+                    "type": "string",
+                    "enum": [
+                      "disabled",
+                      "auto"
+                    ]
+                  },
+                  "maxCount": {
+                    "type": "number"
+                  },
+                  "watermark": {
+                    "type": "boolean"
+                  },
+                  "optionsnew": {
+                    "type": "string",
+                    "enum": [
+                      "standard",
+                      "fast"
+                    ]
+                  }
+                },
+                "required": [
+                  "prompt"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActionResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/text-to-epub-illustrate/action/generate": {
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "prompt": {
+                    "type": "string"
+                  },
+                  "image": {
+                    "type": "string"
+                  },
+                  "size": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "1K",
+                          "2K",
+                          "4K",
+                          "1k",
+                          "2k",
+                          "4k"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "width": {
+                            "type": "integer"
+                          },
+                          "height": {
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "width",
+                          "height"
+                        ]
+                      }
+                    ]
+                  },
+                  "multiple": {
+                    "type": "string",
+                    "enum": [
+                      "disabled",
+                      "auto"
+                    ]
+                  },
+                  "maxCount": {
+                    "type": "number"
+                  },
+                  "watermark": {
+                    "type": "boolean"
+                  },
+                  "optionsnew": {
+                    "type": "string",
+                    "enum": [
+                      "standard",
+                      "fast"
+                    ]
+                  }
+                },
+                "required": [
+                  "prompt"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActionResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/jina-reader/action/read": {
+      "post": {
+        "tags": [
+          "jina-reader"
+        ]
+      }
+    },
+    "/v1/jina-reader/action/search": {
+      "post": {
+        "tags": [
+          "jina-reader"
+        ]
+      }
+    },
+    "/v1/tinify-png-shrink/action/compress": {
+      "post": {
+        "tags": [
+          "tinify-png-shrink"
+        ]
+      }
+    },
+    "/v1/file-upload/action/generate-presigned-url": {
+      "post": {
+        "tags": [
+          "file-upload"
+        ]
+      }
+    },
+    "/v1/file-upload/action/create-multipart-upload": {
+      "post": {
+        "tags": [
+          "file-upload"
+        ]
+      }
+    },
+    "/v1/file-upload/action/generate-presigned-urls": {
+      "post": {
+        "tags": [
+          "file-upload"
+        ]
+      }
+    },
+    "/v1/file-upload/action/complete-multipart-upload": {
+      "post": {
+        "tags": [
+          "file-upload"
+        ]
+      }
+    },
+    "/v1/file-upload/action/abort-multipart-upload": {
+      "post": {
+        "tags": [
+          "file-upload"
+        ]
+      }
+    },
+    "/v1/qwen-image-edit-plus/action/edit": {
+      "post": {
+        "tags": [
+          "qwen-image-edit-plus"
+        ]
+      }
+    },
+    "/v1/qwen-doc-turbo/action/analyze": {
+      "post": {
+        "tags": [
+          "qwen-doc-turbo"
+        ]
+      }
+    },
+    "/v1/image-translate/result/{sessionID}": {
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "translatedImageURL": {
+                      "type": "string"
+                    },
+                    "contentType": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "translatedImageURL",
+                    "contentType"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/manga-zip-translate/result/{sessionID}": {
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "taskID": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "succeeded"
+                      ]
+                    },
+                    "resultZipURL": {
+                      "type": "string"
+                    },
+                    "resultZipRawURL": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "resultZipObjectKey": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "translatedImages": {
+                      "type": "number"
+                    },
+                    "totalPages": {
+                      "type": "number"
+                    },
+                    "translatedPages": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "taskID",
+                    "status",
+                    "resultZipURL",
+                    "translatedImages",
+                    "totalPages",
+                    "translatedPages"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
